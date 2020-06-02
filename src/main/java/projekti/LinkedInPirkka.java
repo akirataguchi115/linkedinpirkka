@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MyApplication {
+public class LinkedInPirkka {
 
     public static void main(String[] args) {
-        SpringApplication.run(MyApplication.class);
+        SpringApplication.run(LinkedInPirkka.class);
          /*
         1.
             1. Internetin perusosat
