@@ -1,1 +1,1 @@
-![Linkedin Pirkka](/img/pirkkalinkedin.jpg)
+![Linkedin Pirkka](/img/linkedinpirkka.jpg)
