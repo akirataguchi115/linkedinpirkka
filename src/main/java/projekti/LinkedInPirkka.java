@@ -8,7 +8,7 @@ public class LinkedInPirkka {
 
     public static void main(String[] args) {
         SpringApplication.run(LinkedInPirkka.class);
-         /*
+        /*
         1.
             1. Internetin perusosat
             2. Web-palvelimen toiminta
@@ -44,7 +44,7 @@ public class LinkedInPirkka {
             2. Muutama sana tietoturvasta
             3. Isommille käyttäjämäärille skaalautuvat sovellukset
             4. Reaktiivinen ohjelmointi
-        */
+         */
     }
 
 }

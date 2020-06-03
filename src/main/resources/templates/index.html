@@ -5,6 +5,16 @@
         <title>Hello world</title>
     </head>
     <body>
-        <h1 th:text="${'Hello ' + message}">Hello world</h1>
+        <h1>LiNkeDiN</h1>
+        <form th:action="@{/}" method="POST">
+            <label>Search for users</label><br />
+            <input type="text" name="search" /><br />
+            <input type="submit" value="Search" />
+        </form>
+        <ul>
+            <li th:each="user : ${list}">
+                <a th:href="@{'/users/' + ${user.url}}" th:text=${user.name}></a>
+            </li>
+        </ul>
     </body>
 </html>

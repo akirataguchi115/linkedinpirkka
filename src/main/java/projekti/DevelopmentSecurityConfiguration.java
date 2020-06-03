@@ -3,7 +3,6 @@ package projekti;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -26,7 +25,8 @@ public class DevelopmentSecurityConfiguration extends WebSecurityConfigurerAdapt
 
         http.authorizeRequests()
                 .antMatchers("/h2-console", "/h2-console/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/").authenticated()
+                .antMatchers("/").permitAll()
+                .antMatchers("/users/**").permitAll()
                 .antMatchers("/register").permitAll()
                 .anyRequest().authenticated();
         http.formLogin()
