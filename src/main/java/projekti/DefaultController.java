@@ -1,5 +1,6 @@
 package projekti;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +39,7 @@ public class DefaultController {
 
     @PostMapping("/register")
     public String register(@RequestParam String email, String password, String name, String url) {
-        accountRepository.save(new Account(email, passwordEncoder.encode(password), name, url));
+        accountRepository.save(new Account(email, passwordEncoder.encode(password), name, url, new ArrayList<>()));
         return "redirect:/login";
     }
 
