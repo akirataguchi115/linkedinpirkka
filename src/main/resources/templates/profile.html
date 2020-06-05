@@ -13,5 +13,13 @@
             <div th:case='sent'>Connection request sent</div>
             <div th:case="'confirmed'">Connected</div>
         </div>
+        <div th:if="${connection == 'itsyou'}">
+            <p>Connections</p>
+            <ul>
+                <li th:each="friend : ${connections}">
+                    <span th:text="${friend.to.name}">Connection</span>
+                </li>
+            </ul>
+        </div>
     </body>
 </html>

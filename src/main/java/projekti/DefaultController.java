@@ -49,16 +49,28 @@ public class DefaultController {
 
     @GetMapping("/users/{url}")
     public String showProfile(Model model, @PathVariable String url) {
-        System.out.println("Logged in: " + SecurityContextHolder.getContext().getAuthentication().getName());
-        model.addAttribute("name", accountRepository.findByUrl(url).getName());
-        model.addAttribute("account", accountRepository.findByUrl(url));
-        Connection connection = connectionRepository.findByFromAndTo(accountRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()), accountRepository.findByUrl(url));
-        if (connection == null) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (currentUser.equals("anonymousUser")) {
             model.addAttribute("connection", "null");
-        } else if (!connection.getAccepted()) {
-            model.addAttribute("connection", "sent");
         } else {
-            model.addAttribute("connection", "confirmed");
+            Account loggedInUser = accountRepository.findByEmail(currentUser);
+            System.out.println("Logged in: " + currentUser);
+            model.addAttribute("name", accountRepository.findByUrl(url).getName());
+            model.addAttribute("account", accountRepository.findByUrl(url));
+            Connection connection = connectionRepository.findByFromAndTo(accountRepository.findByEmail(currentUser), accountRepository.findByUrl(url));
+            if (loggedInUser.getUrl().equals(url)) {
+                model.addAttribute("connection", "itsyou");
+                List<Connection> list = connectionRepository.findByFromOrTo(loggedInUser, loggedInUser);
+                if (!list.isEmpty()) {
+                    model.addAttribute("connections", list);
+                }
+            } else if (connection == null) {
+                model.addAttribute("connection", "null");
+            } else if (!connection.getAccepted()) {
+                model.addAttribute("connection", "sent");
+            } else if (connection.getAccepted()) {
+                model.addAttribute("connection", "confirmed");
+            }
         }
         return "profile";
     }
