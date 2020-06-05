@@ -20,6 +20,8 @@ public class DefaultController {
     @Autowired
     private PictureRepository pictureRepository;
     @Autowired
+    private ConnectionRepository connectionRepository;
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @GetMapping("/")
@@ -47,9 +49,25 @@ public class DefaultController {
 
     @GetMapping("/users/{url}")
     public String showProfile(Model model, @PathVariable String url) {
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getName());
+        System.out.println("Logged in: " + SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("name", accountRepository.findByUrl(url).getName());
         model.addAttribute("account", accountRepository.findByUrl(url));
+        Connection connection = connectionRepository.findByFromAndTo(accountRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()), accountRepository.findByUrl(url));
+        if (connection == null) {
+            model.addAttribute("connection", "null");
+        } else if (!connection.getAccepted()) {
+            model.addAttribute("connection", "sent");
+        } else {
+            model.addAttribute("connection", "confirmed");
+        }
         return "profile";
+    }
+
+    @PostMapping("/users/{url}")
+    public String sendRequest(Model model, @PathVariable String url) {
+        Account from = accountRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Account to = accountRepository.findByUrl(url);
+        connectionRepository.save(new Connection(from, to, false));
+        return "redirect:/users/" + url;
     }
 }
