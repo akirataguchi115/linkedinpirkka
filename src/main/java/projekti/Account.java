@@ -1,6 +1,7 @@
 package projekti;
 
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -23,13 +24,10 @@ public class Account extends AbstractPersistable<Long> {
     private String password;
     private String name;
     private String url;
-    @JoinTable(
-            name = "Connection",
-            joinColumns = @JoinColumn(name = "accountOneId", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id")
-    )
-    @ManyToMany
-    List<Account> connections;
+    @OneToMany(mappedBy = "from")
+    private List<Connection> sentRequests;
+    @OneToMany(mappedBy = "to")
+    private List<Connection> receivedRequests;
     @JoinTable(
             name = "Commend",
             joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"),
@@ -41,6 +39,6 @@ public class Account extends AbstractPersistable<Long> {
     private List<Post> posts;
     @OneToMany(mappedBy = "account")
     private List<Comment> comments;
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     private Picture picture;
 }

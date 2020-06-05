@@ -3,6 +3,7 @@ package projekti;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +17,8 @@ public class DefaultController {
 
     @Autowired
     private AccountRepository accountRepository;
-
+    @Autowired
+    private PictureRepository pictureRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -39,14 +41,15 @@ public class DefaultController {
 
     @PostMapping("/register")
     public String register(@RequestParam String email, String password, String name, String url) {
-        accountRepository.save(new Account(email, passwordEncoder.encode(password), name, url, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new Picture()));
+        accountRepository.save(new Account(email, passwordEncoder.encode(password), name, url, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new Picture()));
         return "redirect:/login";
     }
 
     @GetMapping("/users/{url}")
-    public String getOne(Model model, @PathVariable String url) {
+    public String showProfile(Model model, @PathVariable String url) {
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("name", accountRepository.findByUrl(url).getName());
+        model.addAttribute("account", accountRepository.findByUrl(url));
         return "profile";
     }
-
 }
