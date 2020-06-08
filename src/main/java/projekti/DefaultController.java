@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,13 +55,16 @@ public class DefaultController {
             model.addAttribute("connection", "null");
         } else {
             Account loggedInUser = accountRepository.findByEmail(currentUser);
-            System.out.println("Logged in: " + currentUser);
+            model.addAttribute("loggedin", loggedInUser);
             model.addAttribute("name", accountRepository.findByUrl(url).getName());
             model.addAttribute("account", accountRepository.findByUrl(url));
             Connection connection = connectionRepository.findByFromAndTo(accountRepository.findByEmail(currentUser), accountRepository.findByUrl(url));
+            if (connection == null) {
+                connection = connectionRepository.findByFromAndTo(accountRepository.findByUrl(url), accountRepository.findByEmail(currentUser));
+            }
             if (loggedInUser.getUrl().equals(url)) {
                 model.addAttribute("connection", "itsyou");
-                List<Connection> list = connectionRepository.findByFromOrTo(loggedInUser, loggedInUser);
+                List<Connection> list = connectionRepository.findByToOrAccepted(loggedInUser, true);
                 if (!list.isEmpty()) {
                     model.addAttribute("connections", list);
                 }
@@ -81,5 +85,23 @@ public class DefaultController {
         Account to = accountRepository.findByUrl(url);
         connectionRepository.save(new Connection(from, to, false));
         return "redirect:/users/" + url;
+    }
+
+    @Transactional
+    @PostMapping("/connection/{user}")
+    public String changeConnection(Model model, @PathVariable String user, @RequestParam boolean connect) {
+        Account currentUser = accountRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Account anotherUser = accountRepository.findByUrl(user);
+        Connection connection = connectionRepository.findByFromAndTo(currentUser, anotherUser);
+        if (connection == null) {
+            connection = connectionRepository.findByFromAndTo(anotherUser, currentUser);
+        }
+        if (connect) {
+            connection.setAccepted(connect);
+            connectionRepository.save(connection);
+        } else {
+            connectionRepository.deleteByFromAndTo(anotherUser, currentUser);
+        }
+        return "redirect:/users/" + currentUser.getUrl();
     }
 }

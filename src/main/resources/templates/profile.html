@@ -16,8 +16,30 @@
         <div th:if="${connection == 'itsyou'}">
             <p>Connections</p>
             <ul>
-                <li th:each="friend : ${connections}">
-                    <span th:text="${friend.to.name}">Connection</span>
+                <li th:each="rel : ${connections}">
+                    <table>
+                        <tr>
+                            <td>
+                                <a th:if="${loggedin.email == rel.to.email}" th:href="@{'/users/' + ${rel.from.url}}" th:text=${rel.from.name}></a>
+                                <a th:if="${loggedin.email == rel.from.email}" th:href="@{'/users/' + ${rel.to.url}}" th:text=${rel.to.name}></a>
+                            </td>
+                            <td>
+                                <form th:if="${rel.accepted}" th:action="@{/connection/{user}(user=${rel.from.url}, connect=false)}" method="POST">
+                                    <input type="submit" value="Remove connection"/>
+                                </form>        
+                            </td>
+                            <td>
+                                <form th:if="${!rel.accepted}" th:action="@{/connection/{user}(user=${rel.from.url}, connect=true)}" method="POST">
+                                    <input type="submit" value="Accept connection request" />
+                                </form>
+                            </td>
+                            <td>
+                                <form th:if="${!rel.accepted}" th:action="@{/connection/{user}(user=${rel.from.url}, connect=false)}" method="POST">
+                                    <input type="submit" value="Remove connection request" />
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
                 </li>
             </ul>
         </div>
