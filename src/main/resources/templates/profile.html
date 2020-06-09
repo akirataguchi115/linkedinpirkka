@@ -6,6 +6,7 @@
     </head>
     <body>
         <p th:inline="text">This is the profile of [[${name}]]!</p>
+        <img th:if="${profilepicture != null}" width="300" height="300" th:src="@{/pictures/{id}(id=${profilepicture})}" />
         <div th:switch="${connection}">
             <form th:case="'null'" th:action="@{/users/{url}(url=${account.url})}" method="POST">
                 <input type="submit" value="Send connection request!"/>
@@ -14,6 +15,11 @@
             <div th:case="'confirmed'">Connected</div>
         </div>
         <div th:if="${connection == 'itsyou'}">
+            <form th:action="@{/pictures}" method="POST" enctype="multipart/form-data">
+                <label for="file">Set profile picture:</label><br />
+                <input type="file" name="file" id="file"/>
+                <input type="submit" value="Submit!" />
+            </form>
             <p>Connections</p>
             <ul>
                 <li th:each="rel : ${connections}">

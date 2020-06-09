@@ -20,8 +20,8 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 public class Picture extends AbstractPersistable<Long> {
 
     private String name;
-    private String contentType;
-    private Long contentLength;
+    private String mediaType;
+    private Long size;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)

@@ -1,8 +1,13 @@
 package projekti;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class DefaultController {
@@ -44,13 +50,14 @@ public class DefaultController {
 
     @PostMapping("/register")
     public String register(@RequestParam String email, String password, String name, String url) {
-        accountRepository.save(new Account(email, passwordEncoder.encode(password), name, url, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new Picture()));
+        accountRepository.save(new Account(email, passwordEncoder.encode(password), name, url, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null));
         return "redirect:/login";
     }
 
     @GetMapping("/users/{url}")
     public String showProfile(Model model, @PathVariable String url) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        Account shownProfile = accountRepository.findByUrl(url);
         if (currentUser.equals("anonymousUser")) {
             model.addAttribute("connection", "null");
         } else {
@@ -75,6 +82,10 @@ public class DefaultController {
             } else if (connection.getAccepted()) {
                 model.addAttribute("connection", "confirmed");
             }
+        }
+        if (shownProfile.getPicture() != null) {
+            System.out.println(shownProfile.getPicture().getId());
+            model.addAttribute("profilepicture", shownProfile.getPicture().getId());
         }
         return "profile";
     }
@@ -102,6 +113,33 @@ public class DefaultController {
         } else {
             connectionRepository.deleteByFromAndTo(anotherUser, currentUser);
         }
+        return "redirect:/users/" + currentUser.getUrl();
+    }
+
+    @GetMapping("/pictures/{id}")
+    public ResponseEntity<byte[]> viewFile(@PathVariable Long id) {
+        Picture picture = pictureRepository.getOne(id);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(picture.getMediaType()));
+        headers.setContentLength(picture.getSize());
+        headers.add("Contnet-Disposition", "attachment; filename=" + picture.getName());
+
+        return new ResponseEntity<>(picture.getContent(), headers, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/pictures")
+    public String setPicture(@RequestParam("file") MultipartFile file) throws IOException {
+        Account currentUser = accountRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        Picture picture = new Picture();
+        picture.setName(file.getOriginalFilename());
+        picture.setMediaType(file.getContentType());
+        picture.setSize(file.getSize());
+        picture.setContent(file.getBytes());
+        currentUser.setPicture(picture);
+        pictureRepository.save(picture);
+
         return "redirect:/users/" + currentUser.getUrl();
     }
 }
