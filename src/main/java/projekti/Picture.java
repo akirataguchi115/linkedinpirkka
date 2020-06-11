@@ -24,7 +24,6 @@ public class Picture extends AbstractPersistable<Long> {
     private Long size;
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobtype")
     @Basic(fetch = FetchType.LAZY)
     private byte[] content;
     @OneToMany(mappedBy = "picture")
