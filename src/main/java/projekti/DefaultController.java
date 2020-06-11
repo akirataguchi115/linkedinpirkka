@@ -115,7 +115,8 @@ public class DefaultController {
         }
         return "redirect:/users/" + currentUser.getUrl();
     }
-
+    
+    @Transactional
     @GetMapping("/pictures/{id}")
     public ResponseEntity<byte[]> viewFile(@PathVariable Long id) {
         Picture picture = pictureRepository.getOne(id);
