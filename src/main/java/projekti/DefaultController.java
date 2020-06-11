@@ -54,6 +54,7 @@ public class DefaultController {
         return "redirect:/login";
     }
 
+    @Transactional
     @GetMapping("/users/{url}")
     public String showProfile(Model model, @PathVariable String url) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();

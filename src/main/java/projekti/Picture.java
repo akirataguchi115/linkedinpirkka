@@ -9,7 +9,7 @@ import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
@@ -23,6 +23,7 @@ public class Picture extends AbstractPersistable<Long> {
     private String mediaType;
     private Long size;
 
+    @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] content;
     @OneToMany(mappedBy = "picture")
