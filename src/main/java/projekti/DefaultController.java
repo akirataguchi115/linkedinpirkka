@@ -128,6 +128,7 @@ public class DefaultController {
         return new ResponseEntity<>(picture.getContent(), headers, HttpStatus.CREATED);
     }
 
+    @Transactional
     @PostMapping("/pictures")
     public String setPicture(@RequestParam("file") MultipartFile file) throws IOException {
         Account currentUser = accountRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
