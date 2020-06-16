@@ -2,7 +2,9 @@ package projekti;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,8 @@ public class DefaultController {
     private PictureRepository pictureRepository;
     @Autowired
     private ConnectionRepository connectionRepository;
+    @Autowired
+    private SkillRepository skillRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -88,6 +92,12 @@ public class DefaultController {
             System.out.println(shownProfile.getPicture().getId());
             model.addAttribute("profilepicture", shownProfile.getPicture().getId());
         }
+        Map<Skill, Integer> skillsAndCommends = new HashMap<>();
+        for (Skill skill : shownProfile.getCommends()) {
+            int commends = skill.getCommends().size();
+            skillsAndCommends.put(skill, commends);
+        }
+        model.addAttribute("skills", skillsAndCommends);
         return "profile";
     }
 
@@ -116,7 +126,7 @@ public class DefaultController {
         }
         return "redirect:/users/" + currentUser.getUrl();
     }
-    
+
     @Transactional
     @GetMapping("/pictures/{id}")
     public ResponseEntity<byte[]> viewFile(@PathVariable Long id) {
@@ -144,5 +154,43 @@ public class DefaultController {
         pictureRepository.save(picture);
 
         return "redirect:/users/" + currentUser.getUrl();
+    }
+
+    @Transactional
+    @PostMapping("/skills/{user}")
+    public String commendSkill(@PathVariable String user, @RequestParam("skill") String skillName) {
+        Account currentUser = accountRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Account userReceivingCommend = accountRepository.findByUrl(user);
+
+        boolean contains = false;
+        for (Skill skill : userReceivingCommend.getCommends()) {
+            if (skill.getName().equals(skillName)) {
+                contains = true;
+                break;
+            }
+        }
+
+        if (!contains) {
+            List<Skill> skills = userReceivingCommend.getCommends();
+            Skill newSkill = new Skill(skillName, new ArrayList<>(), user);
+            skills.add(newSkill);
+            userReceivingCommend.setCommends(skills);
+            skillRepository.save(newSkill);
+            accountRepository.save(userReceivingCommend);
+        } else {
+            List<Skill> skills = currentUser.getCommends();
+            Skill skill = skillRepository.findByNameAndUrl(skillName, user);
+            List<Account> accounts = skill.getCommends();
+            if (!accounts.contains(currentUser)) {
+                accounts.add(currentUser);
+                skill.setCommends(accounts);
+                skillRepository.save(skill);
+
+                skills.add(skill);
+                currentUser.setCommends(skills);
+                accountRepository.save(currentUser);
+            }
+        }
+        return "redirect:/users/" + user;
     }
 }

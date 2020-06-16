@@ -5,14 +5,28 @@
         <title>Profile</title>
     </head>
     <body>
-        <p th:inline="text">This is the profile of [[${name}]]!</p>
+        <h3 th:inline="text">This is the profile of [[${name}]]!</h3>
         <img th:if="${profilepicture != null}" width="300" height="300" th:src="@{/pictures/{id}(id=${profilepicture})}" />
         <div th:switch="${connection}">
             <form th:case="'null'" th:action="@{/users/{url}(url=${account.url})}" method="POST">
                 <input type="submit" value="Send connection request!"/>
             </form>
             <div th:case='sent'>Connection request sent</div>
-            <div th:case="'confirmed'">Connected</div>
+            <div th:case="'confirmed'">
+                <p>Connected</p>
+                <p>Skills</p>
+                <table>
+                    <tr th:each="mapEntry : ${skills}">
+                        <td th:text="${mapEntry.key.name}" />
+                        <td th:text="${mapEntry.value}" />
+                        <td>
+                            <form th:action="@{/skills/{user}(user=${account.url},skill=${mapEntry.key.name})}" method="POST">
+                                <input type="submit" value="Commend"/>
+                            </form>    
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
         <div th:if="${connection == 'itsyou'}">
             <form th:action="@{/pictures}" method="POST" enctype="multipart/form-data">
@@ -20,7 +34,7 @@
                 <input type="file" name="file" id="file"/>
                 <input type="submit" value="Submit!" />
             </form>
-            <p>Connections</p>
+            <h3>Connections</h3>
             <ul>
                 <li th:each="rel : ${connections}">
                     <table>
@@ -48,6 +62,19 @@
                     </table>
                 </li>
             </ul>
+            <h3>Skills</h3>
+            <table>
+                <th>Skill</th>
+                <th>Endorsements</th>
+                <tr th:each="mapEntry : ${skills}">
+                    <td th:text="${mapEntry.key.name}" />
+                    <td th:text="${mapEntry.value}" />
+                </tr>
+            </table>
+            <form th:action="@{/skills/{user}(user=${account.url})}" method="POST">
+                <input type="text" name="skill"/>
+                <input type="submit" value="Add a skill"/>
+            </form>
         </div>
     </body>
 </html>
