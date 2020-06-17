@@ -7,7 +7,7 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
     Connection findByFromAndTo(Account from, Account to);
 
-    List<Connection> findByToOrAccepted(Account to, boolean accepted);
+    List<Connection> findByToAndAcceptedOrFromAndAccepted(Account to, boolean accepted, Account from, boolean accept);
     
     long deleteByFromAndTo(Account from, Account to);
 }

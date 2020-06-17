@@ -14,8 +14,22 @@
             <div th:case='sent'>Connection request sent</div>
             <div th:case="'confirmed'">
                 <p>Connected</p>
-                <p>Skills</p>
+                <h3>Top skills</h3>
                 <table>
+                    <tr th:each="mapEntry : ${topskills}">
+                        <td th:text="${mapEntry.key.name}" />
+                        <td th:text="${mapEntry.value}" />
+                        <td>
+                            <form th:action="@{/skills/{user}(user=${account.url},skill=${mapEntry.key.name})}" method="POST">
+                                <input type="submit" value="Commend"/>
+                            </form>    
+                        </td>
+                    </tr>
+                </table>
+                <h3 th:if="${skills.size() > 0}">Skills</h3>
+                <table th:if="${skills.size() > 0}">
+                    <th>Skill</th>
+                    <th>Endorsements</th>
                     <tr th:each="mapEntry : ${skills}">
                         <td th:text="${mapEntry.key.name}" />
                         <td th:text="${mapEntry.value}" />
@@ -24,6 +38,7 @@
                                 <input type="submit" value="Commend"/>
                             </form>    
                         </td>
+                        <th>
                     </tr>
                 </table>
             </div>
@@ -62,8 +77,17 @@
                     </table>
                 </li>
             </ul>
-            <h3>Skills</h3>
+            <h3>Top skills</h3>
             <table>
+                <th>Skill</th>
+                <th>Endorsements</th>
+                <tr th:each="mapEntry : ${topskills}">
+                    <td th:text="${mapEntry.key.name}" />
+                    <td th:text="${mapEntry.value}" />
+                </tr>
+            </table>
+            <h3 th:if="${skills.size() > 0}">Skills</h3>
+            <table th:if="${skills.size() > 0}">
                 <th>Skill</th>
                 <th>Endorsements</th>
                 <tr th:each="mapEntry : ${skills}">
