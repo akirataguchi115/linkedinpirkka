@@ -3,7 +3,7 @@ package projekti;
 import java.sql.Date;
 import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,9 +19,10 @@ public class Post extends AbstractPersistable<Long> {
 
     private String content;
     private Date date;
-    @ManyToOne
-    private Account account;
     @OneToMany(mappedBy = "post")
     private List<Comment> comments;
+    private String url;
+    @ManyToMany(mappedBy = "upvotes")
+    private List<Account> upvotes;
 
 }

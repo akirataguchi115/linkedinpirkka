@@ -28,6 +28,10 @@ public class Account extends AbstractPersistable<Long> {
     private List<Connection> sentRequests;
     @OneToMany(mappedBy = "to")
     private List<Connection> receivedRequests;
+    @OneToMany(mappedBy = "account")
+    private List<Comment> comments;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Picture picture;
     @JoinTable(
             name = "Commend",
             joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"),
@@ -35,10 +39,11 @@ public class Account extends AbstractPersistable<Long> {
     )
     @ManyToMany
     List<Skill> commends;
-    @OneToMany(mappedBy = "account")
-    private List<Post> posts;
-    @OneToMany(mappedBy = "account")
-    private List<Comment> comments;
-    @ManyToOne(cascade=CascadeType.ALL)
-    private Picture picture;
+    @JoinTable(
+            name = "Upvote",
+            joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id")
+    )
+    @ManyToMany
+    List<Post> upvotes;
 }

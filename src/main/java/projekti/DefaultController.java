@@ -29,7 +29,7 @@ public class DefaultController {
 
     @PostMapping("/register")
     public String register(@RequestParam String email, String password, String name, String url) {
-        accountRepository.save(new Account(email, passwordEncoder.encode(password), name, url, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null));
+        accountRepository.save(new Account(email, passwordEncoder.encode(password), name, url, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, new ArrayList<>(), null));
         return "redirect:/login";
     }
 }
