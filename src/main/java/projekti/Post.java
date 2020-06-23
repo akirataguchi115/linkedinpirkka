@@ -1,6 +1,5 @@
 package projekti;
 
-import java.sql.Date;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -8,6 +7,7 @@ import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.sql.Timestamp;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
@@ -18,7 +18,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 public class Post extends AbstractPersistable<Long> {
 
     private String content;
-    private Date date;
+    private Timestamp date;
     @OneToMany(mappedBy = "post")
     private List<Comment> comments;
     private String url;

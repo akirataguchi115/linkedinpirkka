@@ -35,14 +35,6 @@ public class ProfileController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @PostMapping("/")
-    public String search(Model model, @RequestParam String search) {
-        List<Account> lista = accountRepository.findByNameContainingIgnoreCase(search);
-        model.addAttribute("list", accountRepository.findByNameContainingIgnoreCase(search));
-        return "index";
-    }
-
-
     @Transactional
     @GetMapping("/users/{url}")
     public String showProfile(Model model, @PathVariable String url) {
