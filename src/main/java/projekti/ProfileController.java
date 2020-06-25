@@ -53,7 +53,7 @@ public class ProfileController {
             }
             if (loggedInUser.getUrl().equals(url)) {
                 model.addAttribute("connection", "itsyou");
-                List<Connection> list = connectionRepository.findByToAndAcceptedOrFromAndAccepted(loggedInUser, true, loggedInUser, true);
+                List<Connection> list = connectionRepository.findByToOrFrom(loggedInUser, loggedInUser);
                 if (!list.isEmpty()) {
                     model.addAttribute("connections", list);
                 }

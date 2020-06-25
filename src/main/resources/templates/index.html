@@ -16,18 +16,5 @@
                 <a th:href="@{'/users/' + ${user.url}}" th:text=${user.name}></a>
             </li>
         </ul>
-        <div th:if="${isloggedin}">
-            <h2>Create a post</h2>
-            <form th:action="@{/posts/{user}(user=${loggedinuser.url})}" method="POST">
-                <input type="text" name="content"/>
-                <input type="submit" value="Post"/>
-            </form>
-            <h2>Feed</h2>
-            <ul>
-                <li th:each="post : ${shownposts}">
-                    <p th:inline="text">[[${post.url}]]: [[${post.content}]]</p>
-                </li>
-            </ul>
-        </div>
     </body>
 </html>

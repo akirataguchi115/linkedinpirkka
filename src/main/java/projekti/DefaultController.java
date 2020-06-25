@@ -35,21 +35,7 @@ public class DefaultController {
         }
         model.addAttribute("isloggedin", true);
 
-        List<Post> shownPosts = new ArrayList<>();
         Account loggedInUser = accountRepository.findByEmail(currentUser);
-        for (Connection connection : connectionRepository.findByToAndAcceptedOrFromAndAccepted(loggedInUser, true, loggedInUser, true)) {
-            Account accountWithPosts = connection.getFrom();
-            if (connection.getFrom().getName().equals(loggedInUser.getName())) {
-                accountWithPosts = connection.getTo();
-            }
-            for (Post post : postRepository.findByUrl(accountWithPosts.getUrl())) {
-                shownPosts.add(post);
-            }
-        }
-        for (Post post : postRepository.findByUrl(loggedInUser.getUrl())) {
-            shownPosts.add(post);
-        }
-        model.addAttribute("shownposts", shownPosts);
         model.addAttribute("loggedinuser", loggedInUser);
 
         return "index";
